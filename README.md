@@ -4,14 +4,10 @@
 - Particle sensor Rx moved from GPIO4 (D2) -> GPIO12 (D6)
 - No WiFi
 
-If you'd like to compile and upload this without a UI:  
-`platformio run --target upload --upload-port /dev/ttyUSB0`
+<p align="center"><h2>OLED Display and Temperature/Humidity for the Ikea VINDRIKTNING</h2></p>
 
 
-<p align="center"><h2>MQTT connectivity for the Ikea VINDRIKTNING</h2></p>
-
-
-This repository contains an ESP8266 firmware, which adds MQTT to the Ikea VINDRIKTNING PM2.5 air quality sensor.
+This repository contains an ESP8266 firmware, which adds a display as well as a temperature/humidity sensor to the Ikea VINDRIKTNING PM2.5 air quality sensor.
 The modification  doesn't interfere with normal operation of the device in any way.
 The ESP8266 just adds another data sink beside the colored LEDs.
 
@@ -68,6 +64,9 @@ Furthermore, you will also need to install the following libraries using the Lib
 - adafruit/DHT sensor library@^1.4.6
 
 Just build, flash, and you're done.
+
+If you'd like to compile and upload this without a UI:  
+`platformio run --target upload --upload-port /dev/ttyUSB0`
 
 ## Low-Noise Mod
 
