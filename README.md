@@ -1,8 +1,11 @@
-> This is a derivative of https://github.com/Hypfer/esp8266-vindriktning-particle-sensor.
+> This is a derivative of https://github.com/Hypfer/esp8266-vindriktning-particle-sensor with the following changes:
 - OLED display (128x64 I2C)
 - Temperature & humidity sensor (DHT22 on GPIO14 - D5)
-- Particle sensor RX moved from GPIO4 (D2) -> GPIO12 (D6)
+- Particle sensor Rx moved from GPIO4 (D2) -> GPIO12 (D6)
 - No WiFi
+
+If you'd like to compile and upload this without a UI:  
+`platformio run --target upload --upload-port /dev/ttyUSB0`
 
 
 <p align="center"><h2>MQTT connectivity for the Ikea VINDRIKTNING</h2></p>
@@ -13,10 +16,6 @@ The modification  doesn't interfere with normal operation of the device in any w
 The ESP8266 just adds another data sink beside the colored LEDs.
 
 ![half_assembled](./img/half-assembled.jpg)
-
-Home Assistant Autodiscovery is supported.
-Furthermore, the WifiManager library is used for on-the-fly configuration.
-Also, ArduinoOTA is used, so that firmware updates are possible even with a reassembled device.
 
 As the ESP8266 is 5V-tolerant, this should there shouldn't be any issues, however I haven't had time to test this for longer periods of time.
 Therefore, if the ESP burns out after a while, just add a voltage divider or something.
@@ -46,27 +45,29 @@ of accidentally melting some plastic.
 As you can see in this image, you'll need to solder wires to GND, 5V and the Testpoint that is connected to TX of the
 Particle Sensor.
 
-Then just connect these Wires to GND, VIN (5V) and D2 (if you're using a Wemos D1 Mini).
+### Particle Sensor
+For the particle sensor, just connect these Wires to GND, VIN (5V) and ~~D2~~ D6, which is GPIO12 (if you're using a Wemos D1 Mini).
+
+### OLED Screen (128x64 I2C)
+SCL -> D1 (GPIO5) and SDA -> D2 (GPIO4).
+
+### Temperature/Humidity Sensor (DHT22)
+Data -> D5 (GPIO14).
 
 Done.
 
 ## Software
 
-The firmware can be built and flashed using the Arduino IDE.
+The firmware can be built and flashed using the Arduino IDE, but PlatformIO would be much easier because it will automatically pull in the libraries for you.
 
-For this, you will need to add ESP8266 support to it by [using the Boards Manager](https://github.com/esp8266/Arduino#installing-with-boards-manager).
+For Arduino IDE, you will need to rename the `*.cpp` file in `src/` to end in `.ino` instead of `.cpp` and add ESP8266 support to Arduino IDE by [using the Boards Manager](https://github.com/esp8266/Arduino#installing-with-boards-manager).
 
 Furthermore, you will also need to install the following libraries using the Library Manager:
 
-* ArduinoOTA 1.0.3
-* ArduinoJSON 6.10.1
-* PubSubClient 2.8.0
-* WiFiManager 0.15.0
-
+- olikraus/U8g2@^2.35.7
+- adafruit/DHT sensor library@^1.4.6
 
 Just build, flash, and you're done.
-
-When connecting everything up, you should see an open Wi-Fi Access Point to configure your Wi-Fi and MQTT credentials.
 
 ## Low-Noise Mod
 
@@ -102,10 +103,6 @@ Therefore, to add Wi-Fi connectivity, we just need to also listen to the TX of t
 The Ikea uC will do all that polling stuff for us.
 
 As reported in #16, the transitions from Green to Yellow and Yellow to Red in the Ikea firmware are at around 30 and 100μg/m³.
-
-## ToDo
-
-Reconfiguration of a provisioned device without having to OTAU a firmware that clears the settings would be nice.
 
 
 ## References and sources
