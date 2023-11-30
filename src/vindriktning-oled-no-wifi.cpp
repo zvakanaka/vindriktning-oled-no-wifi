@@ -39,7 +39,7 @@ void setup() {
   u8g2.begin();
 
   u8g2.setFont(u8g2_font_unifont_t_symbols);
-  u8g2.drawGlyph((64 - 12) / 2, 40, 0x23f3);
+  u8g2.drawGlyph((128 - 12) / 2, 40, 0x23f3);
 
   u8g2.setFont(u8g2_font_simple1_te);
   // u8g2.clearBuffer();
@@ -72,17 +72,23 @@ void loop() {
     float t = dht.readTemperature();
     float h = dht.readHumidity();
     u8g2.clearBuffer();
-    if (isnan(h) || isnan(t)) {
-      u8g2.drawStr(0, 64, "Temp/humidity sensor error!");
-    }
+    bool tempHumError =
+        isnan(h) || isnan(t) || h > 100 || h < 0 || t > 100 || t < -40;
 
     u8g2.setFont(u8g2_font_simple1_te);
 
-    snprintf(fahrenheit, sizeof(fahrenheit), "%d F", int((t * 9 / 5) + 32));
+    if (tempHumError) {
+      u8g2.setFont(u8g2_font_squeezed_r6_tr);
+      u8g2.drawStr(0, 64, "Temp/humidity sensor error!");
+    } else {
+      snprintf(fahrenheit, sizeof(fahrenheit), "%d F", int((t * 9 / 5) + 32));
+      snprintf(humidity, sizeof(humidity), "H: %d", int(h));
+      u8g2.drawStr(128 - u8g2.getStrWidth(fahrenheit) - 8, 8, fahrenheit);
+      u8g2.drawStr(0, 8, humidity);
 
-    snprintf(humidity, sizeof(humidity), "H: %d", int(h));
-    u8g2.drawStr(128 - u8g2.getStrWidth(fahrenheit) - 8, 8, fahrenheit);
-    u8g2.drawStr(0, 8, humidity);
+      /* u8g2.setFont(u8g2_font_percent_circle_25_hn); */
+      /* u8g2.drawGlyph(0, 40, 49); */
+    }
 
     if (state.valid) {
       u8g2.setFont(u8g2_font_fub49_tn);
@@ -90,6 +96,7 @@ void loop() {
       u8g2_uint_t w = u8g2.getStrWidth(avgPM25);
       u8g2.drawStr((128 - w) / 2, (64 - 50) / 2 + 50, avgPM25);
     } else {
+      u8g2.setFont(u8g2_font_squeezed_r6_tr);
       u8g2.drawStr(0, 20, "Particle sensor error!");
     }
     u8g2.sendBuffer();
