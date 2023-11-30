@@ -37,7 +37,7 @@ void setup() {
   Serial.printf("Reset reason: %s\n", ESP.getResetReason().c_str());
 
   u8g2.begin();
-
+  u8g2.setContrast(0);
   u8g2.setFont(u8g2_font_unifont_t_symbols);
   u8g2.drawGlyph((128 - 12) / 2, 40, 0x23f3);
 
