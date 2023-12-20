@@ -41,6 +41,8 @@ of accidentally melting some plastic.
 As you can see in this image, you'll need to solder wires to GND, 5V and the Testpoint that is connected to TX of the
 Particle Sensor.
 
+![wiring-diagram](./img/vindriktning-oled-no-wifi_bb.png)
+
 ### Particle Sensor
 For the particle sensor, just connect these Wires to GND, VIN (5V) and ~~D2~~ D6, which is GPIO12 (if you're using a Wemos D1 Mini).
 
