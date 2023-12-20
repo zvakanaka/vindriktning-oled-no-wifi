@@ -10,6 +10,9 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0);
 particleSensorState_t state;
 
 #define statusCheckInterval 3000
+#define BOOT_DELAY 3000
+#define PARTICLE_SENSOR_LOADING_DELAY 20000
+
 uint32_t statusCheckPreviousMillis = millis();
 
 #define DHTPIN 14     // Digital pin connected to the DHT sensor
@@ -46,7 +49,7 @@ void setup() {
   // u8g2.drawStr(0,20,"Hello from esp8266-vindriktning-particle-sensor");
   u8g2.sendBuffer();
 
-  delay(3000);
+  delay(BOOT_DELAY);
 
   snprintf(identifier, sizeof(identifier), "VINDRIKTNING-%X", ESP.getChipId());
   u8g2_uint_t w = u8g2.getStrWidth(identifier);
@@ -75,29 +78,44 @@ void loop() {
     bool tempHumError =
         isnan(h) || isnan(t) || h > 100 || h < 0 || t > 100 || t < -40;
 
-    u8g2.setFont(u8g2_font_simple1_te);
+    // https://github.com/olikraus/u8g2/wiki/fntgrpx11#6x12
+    // u8g2.setFont(u8g2_font_6x12_tr);
 
+      u8g2.setFont(u8g2_font_9x15_tf);
     if (tempHumError) {
-      u8g2.setFont(u8g2_font_squeezed_r6_tr);
+      // u8g2.setFont(u8g2_font_6x12_tf);
+      u8g2.setFont(u8g2_font_9x15_tf);
+
       u8g2.drawStr(0, 64, "Temp/humidity sensor error!");
     } else {
       snprintf(fahrenheit, sizeof(fahrenheit), "%d F", int((t * 9 / 5) + 32));
-      snprintf(humidity, sizeof(humidity), "H: %d", int(h));
-      u8g2.drawStr(128 - u8g2.getStrWidth(fahrenheit) - 8, 8, fahrenheit);
-      u8g2.drawStr(0, 8, humidity);
 
-      /* u8g2.setFont(u8g2_font_percent_circle_25_hn); */
-      /* u8g2.drawGlyph(0, 40, 49); */
+      snprintf(humidity, sizeof(humidity), "%d%%", int(h));
+      u8g2.drawStr(128 - u8g2.getStrWidth(fahrenheit) - 8, 8 + 3, fahrenheit);
+      // degree https://github.com/olikraus/u8g2/wiki/u8g2reference#drawcircle
+      u8g2.drawCircle(128 - u8g2.getStrWidth(fahrenheit) * .333 - 8 - 1 , 2, 1, U8G2_DRAW_ALL);
+      u8g2.drawStr(0, 8 + 3, humidity);
     }
+
+    /* u8g2.drawPixel(0,0); */
+    /* u8g2.drawPixel(124, 63); */
+    /* u8g2.drawPixel(0,63); */
+    /* u8g2.drawPixel(127,0); */
 
     if (state.valid) {
       u8g2.setFont(u8g2_font_fub49_tn);
       snprintf(avgPM25, sizeof(avgPM25), "%d", state.avgPM25);
       u8g2_uint_t w = u8g2.getStrWidth(avgPM25);
-      u8g2.drawStr((128 - w) / 2, (64 - 50) / 2 + 50, avgPM25);
+      bool isMoreThan2Digits = true;//state.avgPM25 > 99;
+      int digitHeight = isMoreThan2Digits ? 62: 50;
+      u8g2.drawStr((128 - w) / 2, (64 - digitHeight) / 2 + digitHeight, avgPM25);
+      /* u8g2.drawStr((128 - w) / 2, (64 - 50) / 2 + 50, avgPM25); */
+    } else if (currentMillis < PARTICLE_SENSOR_LOADING_DELAY) {
+      u8g2.setFont(u8g2_font_6x12_tr);
+      u8g2.drawStr(0, 38, "Air sensor loading");
     } else {
-      u8g2.setFont(u8g2_font_squeezed_r6_tr);
-      u8g2.drawStr(0, 20, "Particle sensor error!");
+      u8g2.setFont(u8g2_font_6x12_tr);
+      u8g2.drawStr(0, 38, "Air sensor error");
     }
     u8g2.sendBuffer();
   }
