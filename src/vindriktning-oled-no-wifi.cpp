@@ -1,6 +1,7 @@
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <U8g2lib.h>
+#include <CircularBuffer.h>
 
 #include "SerialCom.h"
 #include "Types.h"
@@ -14,6 +15,8 @@ particleSensorState_t state;
 #define PARTICLE_SENSOR_LOADING_DELAY 20000
 
 uint32_t statusCheckPreviousMillis = millis();
+
+CircularBuffer<char,126> circBuf; // uses 538 bytes
 
 #define DHTPIN 14     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT22 // DHT 22 (AM2302)
@@ -54,9 +57,9 @@ void setup() {
   snprintf(identifier, sizeof(identifier), "VINDRIKTNING-%X", ESP.getChipId());
   u8g2_uint_t w = u8g2.getStrWidth(identifier);
 
-  u8g2.clearBuffer();
-  u8g2.drawStr((128 - w) / 2, (64 - 8) / 2, identifier);
-  u8g2.sendBuffer();
+  /* u8g2.clearBuffer(); */
+  /* u8g2.drawStr((128 - w) / 2, (64 - 8) / 2, identifier); */
+  /* u8g2.sendBuffer(); */
   u8g2.setFont(u8g2_font_fub49_tn);
   Serial.printf("%s/%s/status\n", FIRMWARE_PREFIX, identifier);
 
@@ -78,16 +81,13 @@ void loop() {
     bool tempHumError =
         isnan(h) || isnan(t) || h > 100 || h < 0 || t > 100 || t < -40;
 
-    // https://github.com/olikraus/u8g2/wiki/fntgrpx11#6x12
-    // u8g2.setFont(u8g2_font_6x12_tr);
-
-      u8g2.setFont(u8g2_font_9x15_tf);
     if (tempHumError) {
-      // u8g2.setFont(u8g2_font_6x12_tf);
-      u8g2.setFont(u8g2_font_9x15_tf);
+      // https://github.com/olikraus/u8g2/wiki/fntgrpx11#6x12
+      u8g2.setFont(u8g2_font_6x12_tf);
 
       u8g2.drawStr(0, 64, "Temp/humidity sensor error!");
     } else {
+      u8g2.setFont(u8g2_font_9x15_tf);
       snprintf(fahrenheit, sizeof(fahrenheit), "%d F", int((t * 9 / 5) + 32));
 
       snprintf(humidity, sizeof(humidity), "%d%%", int(h));
@@ -110,13 +110,24 @@ void loop() {
       int digitHeight = isMoreThan2Digits ? 62: 50;
       u8g2.drawStr((128 - w) / 2, (64 - digitHeight) / 2 + digitHeight, avgPM25);
       /* u8g2.drawStr((128 - w) / 2, (64 - 50) / 2 + 50, avgPM25); */
+
+      circBuf.push(state.avgPM25);
     } else if (currentMillis < PARTICLE_SENSOR_LOADING_DELAY) {
+      /* circBuf.push(currentMillis / 1000 % 126); */
       u8g2.setFont(u8g2_font_6x12_tr);
       u8g2.drawStr(0, 38, "Air sensor loading");
     } else {
       u8g2.setFont(u8g2_font_6x12_tr);
       u8g2.drawStr(0, 38, "Air sensor error");
     }
+
+    for (decltype(circBuf)::index_t i = 0; i < circBuf.size(); i++) {
+      /* u8g2.drawPixel(126 - i, 64 - circBuf[i]); */
+      if (i != 0)
+        u8g2.drawLine(i,     63 - circBuf[i],
+                      i - 1, 63 - circBuf[i - 1]);
+    }
+
     u8g2.sendBuffer();
   }
 }
