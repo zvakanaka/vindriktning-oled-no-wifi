@@ -16,9 +16,9 @@ Therefore, if the ESP burns out after a while, just add a voltage divider or som
 
 ## Videos
 
-<video src='./img/power-on.mp4.mov' />
+<video src="./img/power-on.mp4.mov" />
 
-<video src='./img/screen-timelapse-with-text.mp4.mov' />
+<video src="./img/screen-timelapse-with-text.mp4.mov" />
 
 ## Prerequisites
 
