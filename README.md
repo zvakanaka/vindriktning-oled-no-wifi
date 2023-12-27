@@ -11,10 +11,13 @@ This repository contains an ESP8266 firmware, which adds a display as well as a 
 The modification  doesn't interfere with normal operation of the device in any way.
 The ESP8266 just adds another data sink beside the colored LEDs.
 
-![half_assembled](./img/half-assembled.jpg)
-
 As the ESP8266 is 5V-tolerant, this should there shouldn't be any issues, however I haven't had time to test this for longer periods of time.
 Therefore, if the ESP burns out after a while, just add a voltage divider or something.
+
+## Videos
+![Power On](./img/power-on.mp4)  
+
+![Screen Time Lapse with Text](./img/screen-timelapse-with-text.mp4)  
 
 ## Prerequisites
 
@@ -35,8 +38,6 @@ To install the ESP8266, you need to unscrew the four visible screws in the back 
 Then, there are also three screws holding the tiny PCB in place. These aren't necessary to remove since you can solder
 in-place, however personally, I'd recommend taking the board out of there since it will be easier to solder without fear
 of accidentally melting some plastic.
-
-![board](./img/board.jpg)
 
 As you can see in this image, you'll need to solder wires to GND, 5V and the Testpoint that is connected to TX of the
 Particle Sensor.
@@ -70,43 +71,23 @@ Just build, flash, and you're done.
 If you'd like to compile and upload this without a UI:  
 `platformio run --target upload --upload-port /dev/ttyUSB0`
 
-## Low-Noise Mod
-
-**Note:** The intent of this section is only to document that this is possible. I don't "recommend" doing this nor do I advise against it. 
-
-As you might've noticed, there's a fan in there, which is audible even multiple meters away.
-
-For some reason, the Ikea uC firmware decides to toggle the fan on and off every minute 
-or so causing the noise it makes to change and therefore it constantly stays noticeable.
-
-Good thing is that the Fan does spin up fine with just 3.3V, which means that we can run it constantly from the
-voltage regulator of the D1 Mini.
-
-At 3.3V its noise is barely noticeable from 50 cm away.
-
-![3.3v](./img/3.3v.jpg)
-
-Having the Fan not connected at all was also tried but proved to mess up all readings completely.
-
-
-This is of course a more invasive modification than just adding Wi-Fi data logging.
-Though, given that it is just a €10 device, I'm fine with that.
+## Misc
 
 To make soldering a bit easier, note that the whole outer metal part of the Micro USB connector of the D1 Mini is
 connected to GND.
 
-## Misc
-
-The VINDRIKTNING consists of a custom(?) Cubic PM1006-like Sensor + another uC that does all that LED stuff, which talk
+The Vindriktning consists of a custom(?) Cubic PM1006-like Sensor + another uC that does all that LED stuff, which talk
 via UART. The uC simply regularly polls the sensor and displays the results.
-
-Therefore, to add Wi-Fi connectivity, we just need to also listen to the TX of the Sensor and decode those messages.
-The Ikea uC will do all that polling stuff for us.
 
 As reported in #16, the transitions from Green to Yellow and Yellow to Red in the Ikea firmware are at around 30 and 100μg/m³.
 
 
 ## References and sources
-
+- [Hypfer's Code](https://github.com/Hypfer/esp8266-vindriktning-particle-sensor)
 - [@haxfleisch](https://twitter.com/haxfleisch) for their teardown of the device.
 - [Gabriel Valky](https://github.com/gabonator) for the incredibly useful [LA104 custom firmware + tools](https://github.com/gabonator/LA104)
+
+### 3D Models
+- [Custom Back](https://www.thingiverse.com/thing:6403319)
+- [OLED Frame](https://www.thingiverse.com/thing:2157801) (slides into case)
+- [DHT22 Temperature/humidity Sensor Case](https://www.thingiverse.com/thing:1520129) (screws into back using one of the 4 frame-screws through the hole in the white part of the DHT22)
