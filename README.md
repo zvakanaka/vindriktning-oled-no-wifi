@@ -16,9 +16,9 @@ Therefore, if the ESP burns out after a while, just add a voltage divider or som
 
 ## Videos
 
-<video src="./img/power-on.mp4.mov" />
+https://github.com/zvakanaka/vindriktning-oled-no-wifi/assets/8365885/152a4b98-3d9d-4007-931a-cf2efa4b7743
 
-<video src="./img/screen-timelapse-with-text.mp4.mov" />
+https://github.com/zvakanaka/vindriktning-oled-no-wifi/assets/8365885/816829d6-6ecd-432c-b0bc-8723ba30da9b
 
 ## Prerequisites
 
