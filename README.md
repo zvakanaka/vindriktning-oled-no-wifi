@@ -15,9 +15,10 @@ As the ESP8266 is 5V-tolerant, this should there shouldn't be any issues, howeve
 Therefore, if the ESP burns out after a while, just add a voltage divider or something.
 
 ## Videos
-![Power On](./img/power-on.mp4)  
 
-![Screen Time Lapse with Text](./img/screen-timelapse-with-text.mp4)  
+./img/power-on.mp4.mov
+
+./img/screen-timelapse-with-text.mp4.mov
 
 ## Prerequisites
 
